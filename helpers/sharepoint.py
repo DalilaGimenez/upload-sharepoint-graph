@@ -23,7 +23,7 @@ def get_drive_id(access_token: str, site_id: str, drive_name: str) -> str:
     raise ValueError(f"Drive '{drive_name}' não encontrado.")
 
 
-def upload_files(access_token: str, site_id: str, drive_id: str, folder_path: str, keyword_map: dict, prefix_map: dict, log=None) -> tuple[list[str], list[str]]:
+def upload_files(access_token: str, site_id: str, drive_id: str, folder_path: str, prefix_map: dict, log=None) -> tuple[list[str], list[str]]:
     success_logs = []
     error_logs = []
     today = datetime.now().date()
@@ -38,15 +38,17 @@ def upload_files(access_token: str, site_id: str, drive_id: str, folder_path: st
 
             # Lógica de subpasta com base no prefixo ou palavras-chave
             subfolder = ""
-            for prefix, mapped in prefix_map.items():
-                if filename.startswith(prefix):
-                    subfolder = mapped
-                    break
-            if not subfolder:
-                for keyword, mapped in keyword_map.items():
-                    if keyword in filename.lower():
+            for prefix_list, mapped in prefix_map:
+                for prefix in prefix_list:
+                    if filename.startswith(prefix):
                         subfolder = mapped
                         break
+                if subfolder:
+                    break
+
+            # Se não encontrou por prefixo, joga em BKP_SAMBA (fallback explícito)
+            if not subfolder:
+                subfolder = "BKP_SAMBA"
 
             # Se não encontrou subpasta, pula o arquivo
             if not subfolder:
