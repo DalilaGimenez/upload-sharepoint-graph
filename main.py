@@ -33,18 +33,20 @@ SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 RECIPIENT_EMAILS = os.getenv("RECIPIENT_EMAILS", "").split(',')
 
 # === Mapeamentos para subpastas ===
-KEYWORD_MAP = {
-    "cortes": "CORTE",
-    "vendas": "VENDAS",
-    "a_faturar": "AFATURAR"
-}
-PREFIX_MAP = {
-    "rca_": "EQUIPE",
-    "clientes_": "CLIENTES",
-    "fornecedores_": "FORNECEDOR",
-    "produtos_": "Produto linha",
-    "clientes_rca_": "CLI RCA"
-}
+PREFIX_MAP = [
+    (["vendas_abc_", "vendas_api_", "vendas_mcd_", "vendas_tba_", "vendas_tbl_", "vendas_tca_", "vendas_tcg_", "vendas_tcv_", "vendas_tpa_", "vendas_tph_", "vendas_tsj_"], "VENDAS"),
+    (["rca_"], "EQUIPE"),
+    (["clientes_"],  "CLIENTES"),
+    (["fornecedores_"],  "FORNECEDOR"),
+    (["equipe_vendas_"],  "FORNECEDOR"),
+    (["produtos_"],  "Produto linha"),
+    (["clientes_rca_"],  "CLI RCA"),
+    (["a_faturar"],  "AFATURAR"),
+    (["cortes_"],  "CORTE"),
+    (["estoque_parado_"], "fato estoque"),
+    (["estoques_"], "fato estoque"),
+    (["trocas_"],  "TROCAS")
+]
 
 # === LOG SETUP ===
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -94,7 +96,6 @@ try:
     success, errors = upload_files(
         token, site_id, drive_id,
         SOURCE_FOLDER,
-        keyword_map=KEYWORD_MAP,
         prefix_map=PREFIX_MAP,
         log=log
     )
